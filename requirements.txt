@@ -1,0 +1,9 @@
+supervision
+ultralytics
+opencv-python
+flask
+requests
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary

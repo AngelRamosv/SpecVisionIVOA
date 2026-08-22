@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: ivoa_postgres
+    environment:
+      POSTGRES_USER: ivoa_user
+      POSTGRES_PASSWORD: ivoa_password
+      POSTGRES_DB: ivoa_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

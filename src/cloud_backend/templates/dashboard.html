@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IVOA - Central Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(239, 68, 68, 0.1) 0px, transparent 50%);
+            background-attachment: fixed;
+            padding: 2rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        h1 {
+            font-weight: 800;
+            font-size: 2rem;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .value {
+            font-size: 2.5rem;
+            font-weight: 800;
+        }
+
+        .tickets-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .ticket-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .ticket-card:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.02);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .ticket-id {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+
+        .badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.detectado { background-color: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+        .badge.cerrado { background-color: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid rgba(16, 185, 129, 0.3); }
+        .badge.en_progreso { background-color: rgba(56, 189, 248, 0.2); color: #7dd3fc; border: 1px solid rgba(56, 189, 248, 0.3); }
+
+        .ticket-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .ticket-meta {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .btn {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            width: 100%;
+            margin-top: auto;
+        }
+
+        .btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .btn.btn-resolve {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
+        }
+
+        .btn.btn-resolve:hover {
+            background: linear-gradient(135deg, #34d399, #10b981);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: var(--glass-bg);
+            border: 1px solid transparent;
+        }
+
+        /* Loading animation */
+        .loader {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid var(--accent);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <div>
+            <h1>IVOA Dashboard</h1>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">Central Operations Management</p>
+        </div>
+        <div id="connection-status" class="badge en_progreso">Live API Connected</div>
+    </header>
+
+    <div class="stats-container">
+        <div class="stat-card">
+            <h3>Total Tickets</h3>
+            <div class="value" id="stat-total">-</div>
+        </div>
+        <div class="stat-card">
+            <h3>Acción Requerida</h3>
+            <div class="value" id="stat-open" style="color: var(--danger)">-</div>
+        </div>
+        <div class="stat-card">
+            <h3>Resueltos (SLA)</h3>
+            <div class="value" id="stat-closed" style="color: var(--success)">-</div>
+        </div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h2 style="font-weight: 600;">Hallazgos Recientes</h2>
+        <button class="btn" style="width: auto; padding: 0.5rem 1rem;" onclick="clearTickets()">Actualizar (Reset a Cero)</button>
+    </div>
+
+    <div class="tickets-grid" id="tickets-container">
+        <!-- Tickets will be injected here -->
+        <div style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+            <div class="loader"></div>
+            <p style="margin-top: 1rem; color: var(--text-muted);">Cargando tickets...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = '/v1/findings';
+
+        async function fetchFindings() {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('API request failed');
+                const data = await response.json();
+                renderTickets(data);
+                updateStats(data);
+            } catch (error) {
+                console.error('Error fetching findings:', error);
+                document.getElementById('tickets-container').innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--danger);">
+                        Error al conectar con la API central.
+                    </div>`;
+            }
+        }
+
+        async function clearTickets() {
+            try {
+                // Durante las pruebas, este botón limpia la base de datos a cero
+                await fetch(API_URL, { method: 'DELETE' });
+                fetchFindings();
+            } catch (error) {
+                console.error('Error clearing tickets:', error);
+            }
+        }
+
+        function updateStats(data) {
+            document.getElementById('stat-total').innerText = data.length;
+            const open = data.filter(t => t.estado === 'DETECTADO').length;
+            document.getElementById('stat-open').innerText = open;
+            const closed = data.filter(t => t.estado === 'CERRADO').length;
+            document.getElementById('stat-closed').innerText = closed;
+        }
+
+        async function closeTicket(id) {
+            try {
+                const btn = document.getElementById('btn-'+id);
+                btn.innerHTML = '<div class="loader" style="width:16px;height:16px;border-width:2px;"></div>';
+                btn.disabled = true;
+
+                const response = await fetch('/v1/findings/' + id + '/status', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'CERRADO' })
+                });
+                
+                if (response.ok) {
+                    fetchFindings(); // Refresh the list
+                } else {
+                    alert("Error al cerrar ticket");
+                    btn.innerHTML = 'Resolver';
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+                alert("Error al cerrar ticket");
+            }
+        }
+
+        function renderTickets(tickets) {
+            const container = document.getElementById('tickets-container');
+            if (tickets.length === 0) {
+                container.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 3rem; color: var(--text-muted); background: var(--glass-bg); border-radius: 1rem;">
+                        No hay hallazgos registrados.
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = '';
+            tickets.forEach(ticket => {
+                const isClosed = ticket.estado === 'CERRADO';
+                const badgeClass = ticket.estado.toLowerCase();
+                
+                const card = document.createElement('div');
+                card.className = 'ticket-card';
+                card.innerHTML = `
+                    <div class="ticket-header">
+                        <span class="ticket-id">#TKT-${ticket.id.toString().padStart(4, '0')}</span>
+                        <span class="badge ${badgeClass}">${ticket.estado}</span>
+                    </div>
+                    <div class="ticket-title">${ticket.categoria}</div>
+                    <div class="ticket-meta">
+                        <div><strong>Creado:</strong> ${ticket.fecha_creacion}</div>
+                        ${ticket.categoria === 'Apertura Tardía' ? `
+                            <div style="color: var(--danger); font-size: 0.95em; margin: 4px 0;">
+                                <strong>Sistema_comienza:</strong> 09:15:00<br>
+                                <strong>Sistema_detecta:</strong> ${ticket.fecha_creacion.split(' ')[1]}
+                            </div>
+                        ` : ''}
+                        ${!isClosed ? `<div style="color: var(--warning)"><strong>Vencimiento SLA:</strong> ${ticket.fecha_vencimiento}</div>` : ''}
+                        ${isClosed ? `<div style="color: var(--success)"><strong>Cerrado:</strong> ${ticket.fecha_cierre}</div>` : ''}
+                    </div>
+                    <button id="btn-${ticket.id}" 
+                            class="btn ${!isClosed ? 'btn-resolve' : ''}" 
+                            ${isClosed ? 'disabled' : ''}
+                            onclick="closeTicket(${ticket.id})">
+                        ${isClosed ? 'Resuelto' : 'Marcar como Resuelto'}
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Fetch initially and then every 5 seconds
+        fetchFindings();
+        setInterval(fetchFindings, 5000);
+    </script>
+</body>
+</html>

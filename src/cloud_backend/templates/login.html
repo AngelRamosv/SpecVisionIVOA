@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - IVOA</title>
+    <style>
+        :root {
+            --bg-body: #111217;
+            --bg-card: #181b1f;
+            --text-main: #d8d9da;
+            --text-muted: #8e8e93;
+            --border-color: #2c3236;
+            --primary: #3274d9;
+            --primary-hover: #1f60c4;
+            --danger: #e02f44;
+            --input-bg: #0b0c0e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-body);
+            background-image: radial-gradient(circle at 50% 0%, #2a2233 0%, var(--bg-body) 60%);
+            color: var(--text-main);
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            width: 100%;
+            max-width: 380px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #00c6ff, #0072ff);
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            box-shadow: 0 0 20px rgba(0, 114, 255, 0.5);
+            position: relative;
+        }
+        
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background-color: var(--bg-card);
+            border-radius: 50%;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 0;
+            color: #fff;
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 3px;
+            color: var(--text-main);
+            font-size: 0.95rem;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.7rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 3px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .error-message {
+            background-color: rgba(224, 47, 68, 0.1);
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 0.8rem;
+            border-radius: 3px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            display: none;
+        }
+
+        .forgot-password {
+            text-align: right;
+            margin-top: 1rem;
+        }
+
+        .forgot-password a {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="logo-container">
+            <div class="logo-icon"></div>
+            <h2>Welcome to IVOA</h2>
+        </div>
+
+        <div class="error-message" id="error-msg">
+            Invalid email or password
+        </div>
+
+        <form action="/login" method="POST">
+            <div class="form-group">
+                <label for="username">Email or username</label>
+                <input type="text" id="username" name="username" placeholder="email or username" required autofocus>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="password" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Log in</button>
+        </form>
+
+        <div class="forgot-password">
+            <a href="#">Forgot your password?</a>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar error si la URL trae parámetro ?error=1
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('error')) {
+            document.getElementById('error-msg').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
